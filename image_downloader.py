@@ -10,6 +10,7 @@ import crawler
 import downloader
 import sys
 
+MAX_IMG_TRIED = -1
 
 def main(argv):
     parser = argparse.ArgumentParser(description="Image Downloader")
@@ -57,20 +58,20 @@ def main(argv):
         proxy = args.proxy_socks5
 
     crawled_urls = crawler.crawl_image_urls(args.keywords,
-                                            engine=args.engine, max_number=args.max_number,
+                                            engine=args.engine, max_number=MAX_IMG_TRIED,
                                             face_only=args.face_only, safe_mode=args.safe_mode,
                                             proxy_type=proxy_type, proxy=proxy,
                                             browser=args.driver, image_type=args.type, color=args.color)
-    downloader.download_images(image_urls=crawled_urls, dst_dir=args.output,
-                               concurrency=args.num_threads, timeout=args.timeout,
-                               proxy_type=proxy_type, proxy=proxy,
-                               file_prefix=args.engine)
+    img_downloaded = downloader.download_images(image_urls=crawled_urls, dst_dir=args.output, max_imgs=args.max_number,
+                            concurrency=args.num_threads, timeout=args.timeout,
+                            proxy_type=proxy_type, proxy=proxy,
+                            file_prefix=args.engine)
 
-    print("Finished.")
+    print("Finished. Downloaded {} Images".format(img_downloaded))
 
 
 if __name__ == '__main__':
-    my_arg = ['--engine', 'Baidu', '--driver', 'phantomjs', '--max-number', '1', '--output', 'results', 'tps射击游戏背景']
+    my_arg = ['--engine', 'Baidu', '--driver', 'phantomjs', '--max-number', '5', '--output', 'results', 'tps射击游戏背景']
     main(my_arg)
     # main(sys.argv[1:])
     # sample usage python3 image_downloader.py --engine Baidu --driver phantomjs --max-number 5 --output results tps射击游戏背景

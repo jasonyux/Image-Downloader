@@ -16,7 +16,11 @@ def check_clean(img_path):
         return -1 #error
 
     # expecting data in the form of { 'data': [ { 'box':..., 'text':'xxx' }, { 'box':..., 'text':'xxx' }, ... ] }
-    resp = resp.json()
+    try:
+        resp = resp.json()
+    except:
+        return -1 # error
+    
     if resp is None or resp.get("data") is None:
         return -1 #error
 
