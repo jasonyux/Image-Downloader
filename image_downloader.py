@@ -71,3 +71,4 @@ def main(argv):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+    # sample usage python3 image_downloader.py --engine Baidu --driver phantomjs --max-number 5 --output results tps射击游戏背景
