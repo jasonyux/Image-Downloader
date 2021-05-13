@@ -10,7 +10,7 @@ import imghdr
 import os
 import concurrent.futures
 import requests
-import check_no_text
+import check_no_text, file_operations
 
 headers = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -45,10 +45,11 @@ def download_image(image_url, dst_dir, file_name, timeout=20, proxy_type=None, p
             # if file_type is not None:
             if file_type in ["jpg", "jpeg", "png", "bmp"]:
                 # if has text in it, remove it
-                if check_no_text.check_clean(file_path) != 1:
-                    os.remove(file_path)
-                    print("## HAS TEXT OR ERROR:  {}  {}".format(file_path, image_url))
-                    return 0
+                ret = check_no_text.check_clean(file_path)
+                if ret != 1:
+                    file_operations.remove_file(file_path)
+                    print("## HAS TEXT OR ERROR [{}]:  {}  {}".format(ret, file_path, image_url))
+                    return 0 # removed
                 else:
                     new_file_name = "{}.{}".format(file_name, file_type)
                     new_file_path = os.path.join(dst_dir, new_file_name)
@@ -57,14 +58,15 @@ def download_image(image_url, dst_dir, file_name, timeout=20, proxy_type=None, p
                     print("## OK:  {}  {}".format(new_file_name, image_url))
                     return 1 # downloaded
             else:
-                os.remove(file_path)
+                file_operations.remove_file(file_path)
                 print("## Err:  {}".format(image_url))
-            return 0
+            return 0 # removed
         except Exception as e:
             if try_times < 3:
                 continue
             if response:
                 response.close()
+            file_operations.remove_file(file_path)
             print("## Fail:  {}  {}".format(image_url, e.args))
             break
     return 0

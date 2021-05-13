@@ -1,9 +1,7 @@
 # encoding=utf-8
-from datetime import date, timedelta
 import requests
 
 REQUEST_URL = "http://9.91.84.155:11112/ocrPredict"
-DAILY_UPPERBOUND = 2000 # the maximum number of no-text image pulled each day
 
 
 def check_clean(img_path):
@@ -15,6 +13,7 @@ def check_clean(img_path):
     except requests.exceptions.RequestException:
         return -1 #error
 
+    # return 1 # for debugging purposes
     # expecting data in the form of { 'data': [ { 'box':..., 'text':'xxx' }, { 'box':..., 'text':'xxx' }, ... ] }
     try:
         resp = resp.json()
@@ -28,6 +27,5 @@ def check_clean(img_path):
         parsed_text = ocr_data.get("text")
         # image with text
         if parsed_text is not None or parsed_text.strip():
-            no_text = 0
-            break
+            return 0 # found, has text
     return no_text
