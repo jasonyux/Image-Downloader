@@ -10,6 +10,7 @@ import imghdr
 import os
 import concurrent.futures
 import requests
+import check_no_text
 
 headers = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -43,10 +44,16 @@ def download_image(image_url, dst_dir, file_name, timeout=20, proxy_type=None, p
             file_type = imghdr.what(file_path)
             # if file_type is not None:
             if file_type in ["jpg", "jpeg", "png", "bmp"]:
-                new_file_name = "{}.{}".format(file_name, file_type)
-                new_file_path = os.path.join(dst_dir, new_file_name)
-                shutil.move(file_path, new_file_path)
-                print("## OK:  {}  {}".format(new_file_name, image_url))
+                # if has text in it, remove it
+                if check_no_text.check_clean(file_path) != 1:
+                    os.remove(file_path)
+                    print("## HAS TEXT:  {}  {}".format(file_path, image_url))
+                else:
+                    new_file_name = "{}.{}".format(file_name, file_type)
+                    new_file_path = os.path.join(dst_dir, new_file_name)
+                    
+                    shutil.move(file_path, new_file_path)
+                    print("## OK:  {}  {}".format(new_file_name, image_url))
             else:
                 os.remove(file_path)
                 print("## Err:  {}".format(image_url))

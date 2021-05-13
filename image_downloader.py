@@ -70,5 +70,7 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    my_arg = ['--engine', 'Baidu', '--driver', 'phantomjs', '--max-number', '1', '--output', 'results', 'tps射击游戏背景']
+    main(my_arg)
+    # main(sys.argv[1:])
     # sample usage python3 image_downloader.py --engine Baidu --driver phantomjs --max-number 5 --output results tps射击游戏背景
