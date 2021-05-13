@@ -224,7 +224,7 @@ def baidu_get_image_url_using_api(keywords, max_number=10000, face_only=False,
     query_url = base_url + keywords_str
     query_url += "&face={}".format(1 if face_only else 0)
 
-    init_url = query_url + "&pn=0&rn=30"
+    init_url = query_url + "&pn=0&rn=3000"
 
     proxies = None
     if proxy and proxy_type:
@@ -240,16 +240,25 @@ def baidu_get_image_url_using_api(keywords, max_number=10000, face_only=False,
     #     #'Cache-Control': 'max-age=0',
     #     #'Connection': 'keep-alive',
     # }
+    '''
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1'
+    }
+    '''
     headers = {
         'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
         'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1'
     }
+    #'''
 
     res = requests.get(init_url, proxies=proxies, headers=headers)
     init_json = json.loads(res.text.replace(r"\'", ""), encoding='utf-8', strict=False)
     total_num = init_json['listNum']
+    # total_num = init_json['displayNum']
 
     target_num = min(max_number, total_num)
     crawl_num = min(target_num * 2, total_num)
@@ -262,8 +271,11 @@ def baidu_get_image_url_using_api(keywords, max_number=10000, face_only=False,
 
         def process_batch(batch_no, batch_size):
             image_urls = list()
-            url = query_url + \
-                "&pn={}&rn={}".format(batch_no * batch_size, batch_size)
+            time.sleep(3)
+            timestamp = int(round(time.time() * 1000))
+            ppn = batch_no * batch_size
+            hex_ppn = format(ppn, 'x')
+            url = query_url + "&pn={}&rn={}&gsm={}&{}=None".format(ppn, batch_size, hex_ppn, timestamp)
             try_time = 0
             while True:
                 try:

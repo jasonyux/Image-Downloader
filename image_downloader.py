@@ -143,11 +143,22 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    for keyword in ["和平精英无UI", "tps射击游戏背景", "枪战手游", "和平精英游戏内壁纸", "吃鸡壁纸图片", "虚幻三射击手游"]:
+    related_games = [ 
+        "和平精英", "吃鸡", "绝地求生", "荒野行动", "光荣使命", "终结者2", "虚幻三" # I know this is an engine
+    ]
+    related_keywords = [
+        "游戏照片", "无UI", "游戏内壁纸",
+        "游戏场景", "高光时刻"
+    ]
+    computed_keywords = []
+    for game in related_games:
+        computed_keywords += [game+keyword for keyword in related_keywords]
+    
+    for keyword in computed_keywords:
         my_arg = [
             "--engine", "Baidu",
             "--driver", "phantomjs",
-            "--max-number", "2",
+            "--max-number", "1",
             "--output", "results/{}".format(keyword),
             keyword,
         ]
